@@ -1,0 +1,28 @@
+{
+  "name": "shogi",
+  "version": "0.1.0",
+  "description": "Play shogi (Japanese Chess) in the browser against human opponents or bots",
+  "main": "index.js",
+  "dependencies": {
+    "webpack": "^2.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.16.0",
+    "eslint-config-google": "^0.7.1",
+    "mocha": "^3.2.0",
+    "webpack": "^2.2.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pearpenguin/shogi.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pearpenguin/shogi/issues"
+  },
+  "homepage": "https://github.com/pearpenguin/shogi#readme"
+}
