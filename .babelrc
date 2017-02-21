@@ -1,0 +1,7 @@
+{
+	"presets": [
+		["env", {
+			"modules": false //webpack 2 can parse import/export
+		}]
+	]
+}
