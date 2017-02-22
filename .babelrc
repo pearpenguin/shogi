@@ -1,7 +1,14 @@
 {
-	"presets": [
-		["env", {
-			"modules": false //webpack 2 can parse import/export
-		}]
-	]
+	"env": {
+		"production": {
+			"presets": [
+				["es2015", {
+					"modules": false //webpack 2 can parse import/export
+				}]
+			]
+		},
+		"development": {
+			"presets": ["es2015"]
+		}
+	}
 }
