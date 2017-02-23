@@ -1,4 +1,4 @@
-import {BOARD_SIZE, NUM_COLS} from './Board';
+import {BOARD_SIZE, NUM_COLS} from './defs';
 
 /* Represents a position on the board 
  * Following Shogi board notation:

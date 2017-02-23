@@ -1,10 +1,12 @@
+import { BLACK, WHITE } from './defs';
+
 export default class Piece {
-	constructor() {
-		this.player = null;
-		this.pos = null;
+	constructor (color, pos = null) {
+		this.color = color;
+		this.pos = pos;
 		this.isPromoted = false;
 	}
 
-	getLegalMoves(board) {
+	getLegalMoves (board) {
 	}
 }

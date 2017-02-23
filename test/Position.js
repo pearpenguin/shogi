@@ -1,6 +1,6 @@
 import assert from 'assert';
 import Position from '../src/board/Position';
-import { BOARD_SIZE, NUM_COLS, NUM_ROWS } from '../src/board/Board';
+import { BOARD_SIZE, NUM_COLS, NUM_ROWS } from '../src/board/defs';
 
 /* Test assumes an invariant board representation */
 describe('Position', function () {
