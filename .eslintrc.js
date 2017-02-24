@@ -1,3 +1,6 @@
 module.exports = {
-    "extends": ["eslint:recommended", "google"]
+    "extends": ["eslint:recommended"],
+    "parserOptions": {
+    	"sourceType": "module",
+    }
 };
