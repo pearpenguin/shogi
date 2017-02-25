@@ -1,4 +1,4 @@
-import { COLOR, DIR } from './defs';
+import { COLOR, DIR, INFINITE, NUM_COLS, NUM_ROWS } from './defs';
 import * as position from './position';
 
 export default class Piece {
@@ -11,9 +11,13 @@ export default class Piece {
 		this.isPromoted = false;
 	}
 
+	setPos (pos = null) {
+		this.pos = pos;
+	}
+
 	/* Resolve a direction into a new position based on this piece's color */
 	getNewPosition (pos, direction) {
-		if (pos) {
+		if (position.isValid(pos)) {
 			if (this.color === COLOR.BLACK) {
 				switch (direction) {
 					case DIR.UP:
@@ -68,10 +72,37 @@ export default class Piece {
 	peek (board, pos, direction) {
 		let newPos = this.getNewPosition(pos, direction);
 		//Check if position is inbounds and if one of our own pieces occupy the new position
-		if (position.isValid(newPos) && !board.isMoveConflict(this, newPos)) {
+		if (board.isValidMove(this, newPos)) {
 			return newPos;
 		}
 		return null;
+	}
+
+	/* Return an array of all legal moves, given directions and
+	 * the maximum number of steps it can move. maxSteps of infinite goes to the edge */
+	computeLegalMoves(board, directions, maxSteps = 1) {
+		let steps;
+		let pos;
+		let legalMoves = directions.reduce((moves, dir) => {
+			if (maxSteps === INFINITE)
+				steps = NUM_COLS > NUM_ROWS ? NUM_COLS : NUM_ROWS;
+			else
+				steps = maxSteps;
+			pos = this.pos;
+			// Iteratively peek until maxSteps achieved or invalid move reached
+			while (steps > 0) {
+				steps--;
+				pos = this.peek(board, pos, dir);
+				if (position.isValid(pos)) {
+					moves.push(pos);
+				}
+				else {
+					break;
+				}
+			}
+			return moves;
+		}, []);
+		return legalMoves;
 	}
 
 	/* Abstract function. Rules to be implemented by specific pieces 

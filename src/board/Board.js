@@ -12,15 +12,21 @@ import Pawn from './Pawn';
 export default class Board {
 	constructor () {
 		this.board = [];
+		this.pieces = [];
+		this.clearBoard();
+	}
+
+	clearBoard () {
+		this.board = [];
 		for (var i = 0; i < BOARD_SIZE; i++) {
 			this.board.push(null);
 		}
 		this.pieces = [];
-		this.initBoard();
 	}
 
 	/* Initialize new game board and piece-list */
 	initBoard () {
+		this.clearBoard();
 		/* Init piece-list */
 		/* White */
 		this.pieces = [
@@ -68,20 +74,56 @@ export default class Board {
 		return this.board[pos];
 	}
 
-	/* Put a piece at the specified position on the board */
+	/* Put a piece at the specified position on the board. */
 	putPiece (piece, pos) {
 		this.board[pos] = piece;
+		piece.setPos(pos);
 	}
 
-	/* Check if a move will conflict with an existing piece
-	 * Return true if conflict, false otherwise
+	/* Remove a piece from the specified position on the board */
+	removePiece (piece) {
+		let pos = piece.pos;
+		if (position.isValid(pos)) {
+			this.board[pos] = null;
+			piece.setPos(null);
+		}
+	}
+
+	/* Check if a move will conflict with an existing piece and is inbounds
+	 * Return true if valid, false otherwise
 	 */
-	isMoveConflict (piece, pos) {
+	isValidMove (piece, pos) {
+		if (!position.isValid(pos))
+			return false;
+
 		let piece2 = this.getPiece(pos);
 		//Cannot move into a position occupied by a piece of the same color
 		if (piece2 && piece.color === piece2.color)
-			return true;
+			return false;
 
-		return false;
+		return true;
+	}
+
+	/* Move a piece to a new position */
+	move (piece, pos) {
+		if (piece.getLegalMoves().indexOf(pos) === -1) {
+			return false;
+		}
+		else {
+			/* If destination is occupied, capture the piece */
+			let destPiece = this.getPiece(pos);
+			if (destPiece) {
+				this.capture(piece, destPiece);
+			}
+			else {
+				this.removePiece(piece);
+				this.putPiece(piece, pos);
+			}
+			return true;
+		}
+	}
+
+	capture (taker, taken) {
+
 	}
 }
