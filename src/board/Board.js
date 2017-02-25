@@ -66,7 +66,7 @@ export default class Board {
 		/* Put pieces on board */
 		this.pieces.forEach((piece) => {
 			this.putPiece(piece, piece.pos);
-		})
+		});
 	}
 
 	/* Get the piece at the specified position */
@@ -124,6 +124,5 @@ export default class Board {
 	}
 
 	capture (taker, taken) {
-
 	}
 }
