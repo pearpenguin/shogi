@@ -11,8 +11,6 @@ import Pawn from './Pawn';
 
 export default class Board {
 	constructor () {
-		this.board = [];
-		this.pieces = [];
 		this.clearBoard();
 	}
 
@@ -22,6 +20,9 @@ export default class Board {
 			this.board.push(null);
 		}
 		this.pieces = [];
+		this.resevoir = {};
+		this.resevoir[COLOR.BLACK] = [];
+		this.resevoir[COLOR.WHITE] = [];
 	}
 
 	/* Initialize new game board and piece-list */
@@ -89,6 +90,16 @@ export default class Board {
 		}
 	}
 
+	/* Put a captured piece in the specified resevoir */
+	putResevoir(color, piece) {
+		piece.setColor(color);
+		this.resevoir[color].push(piece);
+	}
+
+	getResevoir(color) {
+		return this.resevoir[color];
+	}
+
 	/* Check if a move will conflict with an existing piece and is inbounds
 	 * Return true if valid, false otherwise
 	 */
@@ -106,7 +117,7 @@ export default class Board {
 
 	/* Move a piece to a new position */
 	move (piece, pos) {
-		if (piece.getLegalMoves().indexOf(pos) === -1) {
+		if (piece.getLegalMoves(this).indexOf(pos) === -1) {
 			return false;
 		}
 		else {
@@ -115,14 +126,19 @@ export default class Board {
 			if (destPiece) {
 				this.capture(piece, destPiece);
 			}
-			else {
-				this.removePiece(piece);
-				this.putPiece(piece, pos);
-			}
+
+			this.removePiece(piece);
+			this.putPiece(piece, pos);
+
 			return true;
 		}
 	}
 
+	/* Capture the specified piece (removes it from the board and
+	 * places it in capturing color's resevoir) */
 	capture (taker, taken) {
+		this.removePiece(taken);
+		/* Put it in the taking player's resevoir */
+		this.putResevoir(taker.color, taken);
 	}
 }

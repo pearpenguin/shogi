@@ -3,16 +3,19 @@ import * as position from './position';
 
 export default class Piece {
 	constructor (color, pos = null) {
-		if (color !== COLOR.BLACK && color !== COLOR.WHITE)
-			throw new Error('Piece color must be BLACK or WHITE');
-
-		this.color = color;
-		this.pos = pos;
+		this.setColor(color);
+		this.setPos(pos);
 		this.isPromoted = false;
 	}
 
 	setPos (pos = null) {
 		this.pos = pos;
+	}
+
+	setColor (color) {
+		if (color !== COLOR.BLACK && color !== COLOR.WHITE)
+			throw new Error('Piece color must be BLACK or WHITE');
+		this.color = color;
 	}
 
 	/* Resolve a direction into a new position based on this piece's color */
