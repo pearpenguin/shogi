@@ -1,0 +1,17 @@
+.board-grid {
+	display: table;
+	border-collapse: collapse;
+
+	& > div {
+		display: table-row;
+
+		& > div {
+			display: table-cell;
+			width: 1em;
+			height: 1em;
+			padding: 0.2em;
+			border: 1px solid black;
+			text-align: center;
+		}
+	}
+}

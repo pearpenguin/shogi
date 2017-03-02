@@ -70,7 +70,17 @@ export default class Board {
 		});
 	}
 
-	/* Get the piece at the specified position */
+	/* Get the board representation */
+	getBoard () {
+		return this.board;
+	}
+
+	/* Get the piece-list representation */
+	getPieceList () {
+		return this.pieces;
+	}
+
+	/* Get the piece at the specified position on the board */
 	getPiece (pos) {
 		return this.board[pos];
 	}

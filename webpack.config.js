@@ -8,8 +8,16 @@ module.exports = {
     	path: path.resolve(__dirname, 'dist')
   	},
   	module: {
-  		loaders: [
-  			{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
+  		rules: [
+  			{ test: /\.js$/, exclude: /node_modules/, use: [{loader: "babel-loader"}] },
+        { test: /\.scss$/, exclude: /node_modules/, 
+          use: 
+          [
+            { loader: "style-loader" },
+            { loader: "css-loader" },
+            { loader: "sass-loader" }
+          ]
+        }
   		]
   	}
 };
