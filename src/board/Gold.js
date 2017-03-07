@@ -12,4 +12,8 @@ export default class Gold extends Piece {
 
 		return this.computeLegalMoves(board, directions);
 	}
+
+	toString () {
+		return 'Gold';
+	}
 }

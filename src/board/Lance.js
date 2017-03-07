@@ -7,4 +7,8 @@ export default class Lance extends Piece {
 	getLegalMoves (board) {
 		return this.computeLegalMoves(board, [ DIR.UP ], INFINITE);
 	}
+
+	toString () {
+		return 'Lance';
+	}
 }

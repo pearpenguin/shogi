@@ -12,4 +12,8 @@ export default class King extends Piece {
 
 		return this.computeLegalMoves(board, directions);
 	}
+
+	toString () {
+		return 'King';
+	}
 }

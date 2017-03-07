@@ -1,4 +1,4 @@
-.board-grid {
+.board__grid {
 	display: table;
 	border-collapse: collapse;
 
@@ -14,4 +14,12 @@
 			text-align: center;
 		}
 	}
+}
+
+.board__piece-selected {
+	background-color: yellow;
+}
+
+.board__legal-move {
+	background-color: green;
 }

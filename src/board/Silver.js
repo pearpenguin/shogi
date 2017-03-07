@@ -10,4 +10,8 @@ export default class Silver extends Piece {
 
 		return this.computeLegalMoves(board, directions);
 	}
+
+	toString () {
+		return 'Silver';
+	}
 }

@@ -9,4 +9,8 @@ export default class Pawn extends Piece {
 
 		return this.computeLegalMoves(board, directions);
 	}
+
+	toString () {
+		return 'Pawn';
+	}
 }

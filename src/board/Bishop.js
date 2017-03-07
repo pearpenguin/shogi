@@ -8,4 +8,8 @@ export default class Bishop extends Piece {
 		let directions = [ DIR.UPLEFT, DIR.UPRIGHT, DIR.DOWNLEFT, DIR.DOWNRIGHT ];
 		return this.computeLegalMoves(board, directions, INFINITE);
 	}
+
+	toString () {
+		return 'Bishop';
+	}
 }

@@ -8,4 +8,8 @@ export default class Rook extends Piece {
 		let directions = [ DIR.UP, DIR.LEFT, DIR.RIGHT, DIR.DOWN ];
 		return this.computeLegalMoves(board, directions, INFINITE);
 	}
+
+	toString () {
+		return 'Rook';
+	}
 }

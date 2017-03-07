@@ -20,9 +20,12 @@ export default class Board {
 			this.board.push(null);
 		}
 		this.pieces = [];
+		/* Captured pieces can be dropped on the board */
 		this.resevoir = {};
 		this.resevoir[COLOR.BLACK] = [];
 		this.resevoir[COLOR.WHITE] = [];
+		/* game state (current turn, turn number, player timers) */
+		this.turnToAct = COLOR.BLACK;
 	}
 
 	/* Initialize new game board and piece-list */

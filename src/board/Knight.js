@@ -14,4 +14,8 @@ export default class Knight extends Piece {
 			return board.isValidMove(this, move);
 		});
 	}
+
+	toString () {
+		return 'Knight';
+	}
 }
