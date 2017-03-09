@@ -213,6 +213,94 @@ describe('Board', function () {
 		});
 	});
 
+	describe('promotion rules', function () {
+		beforeEach(function () {
+			board.clearBoard();
+		});
+
+		it('should let black pieces promote in rows a to c', function () {
+			let squares = [
+				p.toIdx(9, 'c'), 
+				p.toIdx(1, 'c'), 
+				p.toIdx(9, 'b'),
+				p.toIdx(1, 'a')
+			];
+			squares.forEach((square) => {
+				board.clearBoard();
+				let pawn = new Pawn(COLOR.BLACK);
+				board.putPiece(pawn, square);
+				assert.isTrue(pawn.promote());
+				assert.isTrue(pawn.isPromoted);
+			});
+		});
+
+		it('should not let black pieces promote in rows d to i', function () {
+			let squares = [
+				p.toIdx(9, 'd'), 
+				p.toIdx(1, 'e'), 
+				p.toIdx(9, 'h'),
+				p.toIdx(1, 'i')
+			];
+			squares.forEach((square) => {
+				board.clearBoard();
+				let pawn = new Pawn(COLOR.BLACK);
+				board.putPiece(pawn, square);
+				assert.isFalse(pawn.promote());
+				assert.isFalse(pawn.isPromoted);
+			});
+		});
+
+		it('should let white pieces promote in rows g to i', function () {
+			let squares = [
+				p.toIdx(9, 'g'), 
+				p.toIdx(1, 'g'), 
+				p.toIdx(9, 'h'),
+				p.toIdx(1, 'i')
+			];
+			squares.forEach((square) => {
+				board.clearBoard();
+				let pawn = new Pawn(COLOR.WHITE);
+				board.putPiece(pawn, square);
+				assert.isTrue(pawn.promote());
+				assert.isTrue(pawn.isPromoted);
+			});
+		});
+
+		it('should not let black pieces promote in rows a to f', function () {
+			let squares = [
+				p.toIdx(9, 'a'), 
+				p.toIdx(1, 'b'), 
+				p.toIdx(9, 'e'),
+				p.toIdx(1, 'f')
+			];
+			squares.forEach((square) => {
+				board.clearBoard();
+				let pawn = new Pawn(COLOR.WHITE);
+				board.putPiece(pawn, square);
+				assert.isFalse(pawn.promote());
+				assert.isFalse(pawn.isPromoted);
+			});
+		});
+
+		describe('King is not promotable', function () {
+			it('should not let king promote', function () {
+				let king = new King(COLOR.BLACK);
+				board.putPiece(king, p.toIdx(5, 'c'));
+				assert.isFalse(king.promote());
+				assert.isFalse(king.isPromoted);
+			});
+		});
+
+		describe('Gold is not promotable', function () {
+			it('should not let Gold promote', function () {
+				let gold = new Gold(COLOR.BLACK);
+				board.putPiece(gold, p.toIdx(5, 'c'));
+				assert.isFalse(gold.promote());
+				assert.isFalse(gold.isPromoted);
+			});
+		});
+	});
+
 	describe('.move', function () {
 		let bishop; 
 		let dest = p.toIdx(4, 'd');

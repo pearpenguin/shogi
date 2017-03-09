@@ -1,4 +1,4 @@
-import { COLOR, DIR, INFINITE, NUM_COLS, NUM_ROWS } from './defs';
+import { COLOR, DIR, INFINITE, NUM_COLS, NUM_ROWS, BOARD_SIZE } from './defs';
 import * as position from './position';
 
 export default class Piece {
@@ -6,6 +6,38 @@ export default class Piece {
 		this.setColor(color);
 		this.setPos(pos);
 		this.isPromoted = false;
+	}
+
+	/* Abstract getter to determine whether a piece is promotable
+	isPromotable ()
+	*/
+
+	/* Get valid promotion squares for this piece */
+	getPromotionSquares () {
+		let validSquares = [];
+		/* Can only promote on the last 3 rows */
+		for (let i = 0; i < NUM_COLS * 3; i++) {
+			validSquares.push(i);
+		}
+		/* Opposite side for white piece */
+		if (this.isWhite()) {
+			validSquares = validSquares.map((pos) => {
+				return BOARD_SIZE - 1 - pos;
+			});
+		}
+		return validSquares;
+	}
+
+	/* Promote a piece in the current position */
+	promote () {
+		if (this.isPromotable() && !this.isPromoted) {
+			/* Check if we are in the promotion zone */
+			if (this.getPromotionSquares().indexOf(this.pos) !== -1) {
+				this.isPromoted = true;
+				return true;
+			}	
+		}
+		return false;
 	}
 
 	setPos (pos = null) {
@@ -18,10 +50,18 @@ export default class Piece {
 		this.color = color;
 	}
 
+	isBlack () {
+		return this.color === COLOR.BLACK;
+	}
+
+	isWhite () {
+		return this.color === COLOR.WHITE;
+	}
+
 	/* Resolve a direction into a new position based on this piece's color */
 	getNewPosition (pos, direction) {
 		if (position.isValid(pos)) {
-			if (this.color === COLOR.BLACK) {
+			if (this.isBlack()) {
 				switch (direction) {
 					case DIR.UP:
 						return position.north(pos);

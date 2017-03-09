@@ -128,6 +128,12 @@ export default class Board {
 		return true;
 	}
 
+	/* End the turn for the current player */
+	endTurn () {
+		this.turnToAct = (this.turnToAct === COLOR.BLACK) ? 
+			COLOR.WHITE : COLOR.BLACK;
+	}
+
 	/* Move a piece to a new position */
 	move (piece, pos) {
 		if (piece.getLegalMoves(this).indexOf(pos) === -1) {

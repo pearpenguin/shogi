@@ -2,6 +2,10 @@ import Piece from './Piece';
 import { DIR } from './defs';
 
 export default class King extends Piece {
+
+	isPromotable () {
+		return false;
+	}
 	
 	/* King can move 1 square in any direction */
 	getLegalMoves (board) {
