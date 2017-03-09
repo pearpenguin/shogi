@@ -323,6 +323,13 @@ describe('Board', function () {
 			assert.isTrue(board.move(bishop, dest));
 			assert.strictEqual(board.getPiece(dest), bishop);
 			assert.includeMembers(board.getResevoir(COLOR.BLACK), [pawn]);
-		})
+		});
+		it('should promote a piece if it is in promotion zone '
+		 + 'and no legal moves are available', function () {
+			let pawn = new Pawn(COLOR.BLACK);
+			board.putPiece(pawn, p.toIdx(1, 'b'));
+			board.move(pawn, p.toIdx(1, 'a'));
+			assert.isTrue(pawn.isPromoted);
+		});
 	});
 });

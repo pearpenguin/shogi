@@ -136,7 +136,7 @@ export default class Board {
 
 	/* Move a piece to a new position */
 	move (piece, pos) {
-		if (piece.getLegalMoves(this).indexOf(pos) === -1) {
+		if (!piece.isLegalMove(this, pos)) {
 			return false;
 		}
 		else {
@@ -148,6 +148,12 @@ export default class Board {
 
 			this.removePiece(piece);
 			this.putPiece(piece, pos);
+
+			/* Piece must be promoted if no more legal moves can be made
+			 * and we are in the promotion zone */
+			if (piece.getLegalMoves(this).length === 0 && piece.inPromotionZone()) {
+				piece.promote();
+			}
 
 			return true;
 		}

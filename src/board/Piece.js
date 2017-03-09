@@ -1,6 +1,7 @@
 import { COLOR, DIR, INFINITE, NUM_COLS, NUM_ROWS, BOARD_SIZE } from './defs';
 import * as position from './position';
 
+/* Abstract class, do not instantiate */
 export default class Piece {
 	constructor (color, pos = null) {
 		this.setColor(color);
@@ -28,11 +29,15 @@ export default class Piece {
 		return validSquares;
 	}
 
-	/* Promote a piece in the current position */
+	inPromotionZone () {
+		return this.getPromotionSquares().indexOf(this.pos) !== -1;
+	}
+
+	/* Promote a piece in the current position if possible */
 	promote () {
 		if (this.isPromotable() && !this.isPromoted) {
 			/* Check if we are in the promotion zone */
-			if (this.getPromotionSquares().indexOf(this.pos) !== -1) {
+			if (this.inPromotionZone()) {
 				this.isPromoted = true;
 				return true;
 			}	
@@ -154,4 +159,8 @@ export default class Piece {
 	getLegalMoves (board) {
 	}
 	*/
+
+	isLegalMove (board, pos) {
+		return this.getLegalMoves(board).indexOf(pos) !== -1;
+	}
 }
