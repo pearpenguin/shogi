@@ -4,8 +4,13 @@ import * as position from './position';
 /* Abstract class, do not instantiate */
 export default class Piece {
 	constructor (color, pos = null) {
+		this.reset();
 		this.setColor(color);
 		this.setPos(pos);
+	}
+
+	/* Reset a piece to demoted status */
+	reset () {
 		this.isPromoted = false;
 	}
 

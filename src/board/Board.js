@@ -100,6 +100,7 @@ export default class Board {
 		if (position.isValid(pos)) {
 			this.board[pos] = null;
 			piece.setPos(null);
+			piece.reset();
 		}
 	}
 

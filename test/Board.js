@@ -317,12 +317,14 @@ describe('Board', function () {
 		it('should return false on an illegal move', function () {
 			assert.isFalse(board.move(bishop, p.toIdx(4, 'e')));
 		});
-		it('should capture an opposing piece and put it in own resevoir', function () {
+		it('should capture an opposing piece and put it in own resevoir in demoted status', function () {
 			let pawn = new Pawn(COLOR.WHITE);
+			pawn.isPromoted = true;
 			board.putPiece(pawn, dest);
 			assert.isTrue(board.move(bishop, dest));
 			assert.strictEqual(board.getPiece(dest), bishop);
 			assert.includeMembers(board.getResevoir(COLOR.BLACK), [pawn]);
+			assert.isFalse(pawn.isPromoted);
 		});
 		it('should promote a piece if it is in promotion zone '
 		 + 'and no legal moves are available', function () {
