@@ -1,4 +1,5 @@
 import Piece from './Piece';
+import Gold from './Gold';
 import { DIR, INFINITE } from './defs';
 
 export default class Lance extends Piece {

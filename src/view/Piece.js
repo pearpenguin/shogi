@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { NUM_COLS, BOARD_SIZE, COLOR } from '../board/defs';
+// import { NUM_COLS, BOARD_SIZE, COLOR } from '../board/defs';
 import '../css/board.scss';
 
 export default {

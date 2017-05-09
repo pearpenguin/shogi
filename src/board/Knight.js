@@ -1,4 +1,5 @@
 import Piece from './Piece';
+import Gold from './Gold';
 import { DIR } from './defs';
 
 export default class Knight extends Piece {

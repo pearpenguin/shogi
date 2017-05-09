@@ -19,8 +19,11 @@ export default {
 	isLegalMove (pos) {
 		return this.legalMoves.indexOf(pos) !== -1;
 	},
-	view (vnode) {
-		let state = vnode.state;
+	isPieceSelectable (piece) {
+		return this.player === this.board.turnToAct
+			&& this.player === piece.color;
+	},
+	view () {
 		/* Put rows into table-like structure */
 		let rows = [];
 		/* Create vnodes for the board squares */
@@ -31,9 +34,11 @@ export default {
 				mPiece = m(Piece, {
 					piece,
 				});
-				onclick = ((e) => {
-					this.setSelectedPiece(piece);
-				});
+				if (this.isPieceSelectable(piece)) {
+					onclick = (() => {
+						this.setSelectedPiece(piece);
+					});
+				}
 			}
 			/* Construct class string for this square */
 			let classStr = [
