@@ -4,7 +4,8 @@
   "description": "Play shogi (Japanese Chess) in the browser against human opponents or bots",
   "main": "index.js",
   "dependencies": {
-    "mithril": "^1.0.1"
+    "mithril": "^1.0.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
@@ -24,7 +25,8 @@
     "lint": "eslint src/**/*.js",
     "dev": "webpack --watch",
     "build": "webpack",
-    "test": "mocha --require babel-register"
+    "test": "mocha --require babel-register",
+    "debug": "mocha --require babel-register debug"
   },
   "repository": {
     "type": "git",

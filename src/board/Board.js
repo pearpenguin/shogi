@@ -1,5 +1,8 @@
+import _ from 'underscore';
 import { BOARD_SIZE, NUM_COLS, COLOR } from './defs';
 import * as position from './position';
+import * as utils from '../utils/utils';
+import Piece from './Piece';
 import King from './King';
 import Gold from './Gold';
 import Silver from './Silver';
@@ -9,16 +12,18 @@ import Bishop from './Bishop';
 import Rook from './Rook';
 import Pawn from './Pawn';
 
+/* Swap from black to white and vice versa */
+function swapColor(color) {
+	return (color === COLOR.BLACK) ? COLOR.WHITE : COLOR.BLACK;
+}
+
 export default class Board {
 	constructor () {
 		this.clearBoard();
 	}
 
 	clearBoard () {
-		this.board = [];
-		for (var i = 0; i < BOARD_SIZE; i++) {
-			this.board.push(null);
-		}
+		this.board = utils.createArray(BOARD_SIZE);
 		this.pieces = [];
 		/* Captured pieces can be dropped on the board */
 		this.resevoir = {};
@@ -73,11 +78,39 @@ export default class Board {
 		});
 	}
 
+	clone () {
+		let clone = new Board();
+		clone.board = this.getBoard().slice();
+		clone.pieces = this.getPieceList().slice();
+		for (let c in COLOR) {
+			clone.resevoir[COLOR[c]] = _.clone(this.resevoir[COLOR[c]]);
+		}
+		clone.turnToAct = this.turnToAct;
+		return clone;
+	}
+
 	/* Get the board representation */
 	getBoard () {
 		return this.board;
 	}
 
+	/* Return a filtered array of the specified column (idx from 0) */
+	getColumn (colIdx) {
+		return this.board.filter((e, idx) => {
+			return position.toCol(idx) === colIdx;
+		});
+	}
+
+	/* Add a new piece to the piecelist and put it in position if applicable */
+	addPiece (piece) {
+		if (!(piece instanceof Piece)) {
+			throw new Error('Trying to add a non-piece');
+		}
+		this.pieces.push(piece);
+		if (piece.pos) {
+			this.putPiece(piece, piece.pos);
+		}
+	}
 	/* Get the piece-list representation */
 	getPieceList () {
 		return this.pieces;
@@ -94,7 +127,7 @@ export default class Board {
 		piece.setPos(pos);
 	}
 
-	/* Remove a piece from the specified position on the board */
+	/* Remove a piece from the board */
 	removePiece (piece) {
 		let pos = piece.pos;
 		if (position.isValid(pos)) {
@@ -129,6 +162,31 @@ export default class Board {
 		return true;
 	}
 
+	/* Iterate through the specified pieces and work out where they're attacking.
+	 * Returns an array of the board, each element is a list of pieces attacking
+	 * that square */
+	computeAttack (pieces) {
+		let attackedSquares = utils.createDblArray(BOARD_SIZE);
+		pieces.forEach((piece) => {
+			if (!(piece instanceof Piece)) {
+				throw new Error('computeAttack needs a Piece');
+			}
+			let moves = piece.getLegalMoves(this);
+			moves.forEach((idx) => {
+				attackedSquares[idx].push(piece);
+			});
+		});
+		return attackedSquares;
+	}
+
+	/* Iterate through all the pieces of the specified color
+	 * and work out where they're attacking. */
+	computeAttackFromColor (color) {
+		return this.computeAttack(this.getPieceList().filter((piece) => {
+			return piece.color === color;	
+		}));
+	}
+
 	/* End the turn for the current player */
 	endTurn () {
 		this.turnToAct = (this.turnToAct === COLOR.BLACK) ? 
@@ -152,7 +210,7 @@ export default class Board {
 
 			/* Piece must be promoted if no more legal moves can be made
 			 * and we are in the promotion zone */
-			if (piece.getLegalMoves(this).length === 0 && piece.inPromotionZone()) {
+			if (!piece.hasLegalMoves(this) && piece.inPromotionZone()) {
 				piece.promote();
 			}
 
@@ -166,5 +224,130 @@ export default class Board {
 		this.removePiece(taken);
 		/* Put it in the taking player's resevoir */
 		this.putResevoir(taker.color, taken);
+	}
+
+	isPawnInCol (colIdx) {
+		let col = this.getColumn(colIdx);
+		return col.some((piece) => {
+			return piece instanceof Pawn;
+		});
+	}
+
+	/* Work out if the specified piece has been checkmated */
+	isCheckmate (king) {
+		if (!(king instanceof King))
+			throw new Error('Need King to calculate checkmate');
+
+		/* Copy the board state so we can play around with it */
+		let b = this.clone();
+		let enemyColor = swapColor(king.color);
+		let oldKingPos = (king.pos);
+		king = b.getPiece(oldKingPos); /* Reference cloned king */
+
+		/* Work out which squares are being attacked by opponent pieces */
+		let attackers = b.computeAttackFromColor(enemyColor);
+
+		/* Check if King is being attacked */
+		let kingAttackers = attackers[king.pos];
+		if (kingAttackers.length === 0) {
+			return false;
+		}
+
+		/* First work out if King has any legal moves (including captures)
+		 * Check each legal move to see if the square is being attacked.
+		 * If a square is not being attacked, then the King can move there
+		 * and therefore it is not checkmate */
+		let kingMoves = king.getLegalMoves(this);
+		for (let i in kingMoves) {
+			let move = kingMoves[i];
+			b.removePiece(king);
+			b.putPiece(king, move);
+			/* Recompute attacked squares */
+			let newAttack = b.computeAttack(attackers[oldKingPos]);
+			if (newAttack.length === 0) {
+				return false;
+			}
+		}
+		/* Move king back to it's original position */
+		b.removePiece(king);
+		b.putPiece(king, oldKingPos);
+
+		/* We've worked out that the King cannot dodge.
+		 * If there is more than one attacking piece, it is checkmate */
+		if (kingAttackers.length > 1) {
+			return true;
+		}
+
+		/* If there is only one attacking piece, work out whether we can capture
+		 * it using a piece other than our king, while keeping the King's square unattacked */
+		let counterAtks = b.computeAttackFromColor(king.color)[kingAttackers[0].pos];
+		for (let i in counterAtks) {
+			let piece = counterAtks[i];
+			if (piece instanceof King) {
+				/* We've already determined that the King cannot move */
+				continue;
+			}
+			b.capture(piece, kingAttackers[0]);
+			/* See if there were any attackers pinning the countering piece
+			 * to the King */
+			let pin = b.computeAttack(attackers[piece.pos]);
+			if (pin[oldKingPos].length === 0) {
+				return false;
+			}
+		}
+
+		/* Cannot avoid checkmate */
+		return true;
+	}
+
+	/* If piece is a pawn, special drop rules must be checked */
+	isPawnDropLegal (piece) {
+		if (!(piece instanceof Pawn)) {
+			throw new Error('Trying to check pawn drop on a non-pawn unit');
+		}
+
+		/* Cannot drop on a column which already has an 
+		 * unpromoted pawn owned by yourself */
+		if (this.isPawnInCol(piece.getCol())) {
+			return false;
+		}
+
+		/* Cannot checkmate opponent's King with pawn drop */
+		let moves = piece.getLegalMoves(this);
+		if (moves.length) {
+			/* Can assume Pawn only attacks one space in front of it */
+			let attackedPiece = this.getPiece(moves.pop());
+			if (attackedPiece instanceof King) {
+				if (this.isCheckmate(attackedPiece)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	isDropLegal (piece) {
+		/* Piece can only be dropped if it has a legal move */
+		if (!piece.hasLegalMoves(this)) {
+			return false;
+		}
+		/* Check special drop rules if piece is a Pawn */
+		if (piece instanceof Pawn && !this.isPawnDropLegal(piece)) {
+			return false;
+		}
+
+	}
+
+	/* Drop a piece from resevoir to the board */
+	drop (piece, pos) {
+		this.putPiece(piece, pos);
+		if (this.isDropLegal(piece)) {
+			this.removePiece(piece);
+			this.putResevoir(piece.color, piece);
+			return false;
+		}
+		return true;
+
 	}
 }

@@ -50,6 +50,16 @@ export default class Piece {
 		return false;
 	}
 
+	/* Return the column this piece is on (zero-based) */
+	getCol () {
+		return position.toCol(this.pos);
+	}
+
+	/* Return the row this piece is on (zero-based) */
+	getRow () {
+		return position.toRow(this.pos);
+	}
+
 	setPos (pos = null) {
 		this.pos = pos;
 	}
@@ -148,6 +158,11 @@ export default class Piece {
 				pos = this.peek(board, pos, dir);
 				if (position.isValid(pos)) {
 					moves.push(pos);
+					/* If opponent piece is in the new position, stop peeking this direction*/
+					let piece = board.getPiece(pos);
+					if (piece && piece.color !== this.color) {
+						break;
+					}
 				}
 				else {
 					break;
@@ -167,5 +182,9 @@ export default class Piece {
 
 	isLegalMove (board, pos) {
 		return this.getLegalMoves(board).indexOf(pos) !== -1;
+	}
+
+	hasLegalMoves (board) {
+		return this.getLegalMoves(board).length !== 0;
 	}
 }

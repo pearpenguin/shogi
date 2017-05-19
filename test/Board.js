@@ -1,4 +1,5 @@
 const assert = require('chai').assert;
+const utils = require('../src/utils/utils');
 const p = require('../src/board/position');
 const Board = require('../src/board/Board').default;
 const King = require('../src/board/King').default;
@@ -129,6 +130,8 @@ describe('Board', function () {
 			});
 		});
 
+		/* TODO: test legal moves for lance, rook, bishop in situation where
+		 * opponent's pieces are in the way */
 		describe('Lance', function () {
 			describe("Black lance's legal moves on an empty board", function () {
 				let legalMoves = [
@@ -332,6 +335,51 @@ describe('Board', function () {
 			board.putPiece(pawn, p.toIdx(1, 'b'));
 			board.move(pawn, p.toIdx(1, 'a'));
 			assert.isTrue(pawn.isPromoted);
+		});
+	});
+
+	describe('.computeAttack', function () {
+		it ('should return the squares that the specified pieces are attacking', function () {
+			let b1 = new Bishop(COLOR.BLACK, p.toIdx(5, 'e'));
+			let p1 = new Pawn(COLOR.BLACK, p.toIdx(4, 'e'));
+			let p2 = new Pawn(COLOR.BLACK, p.toIdx(3, 'g'));
+			let p3 = new Pawn(COLOR.BLACK, p.toIdx(7, 'g'));
+			let attackers = [b1, p1, p2, p3];
+			attackers.forEach((piece) => {
+				board.putPiece(piece, piece.pos);
+			})
+			board.putPiece(new Pawn(COLOR.WHITE), p.toIdx(4, 'd'));
+			board.putPiece(new Pawn(COLOR.WHITE), p.toIdx(7, 'c'));
+
+			let expected = utils.createDblArray(defs.BOARD_SIZE);
+			expected[p.toIdx(4, 'd')] = [b1, p1];
+			expected[p.toIdx(6, 'd')] = [b1];
+			expected[p.toIdx(7, 'c')] = [b1];
+			expected[p.toIdx(4, 'f')] = [b1];
+			expected[p.toIdx(6, 'f')] = [b1];
+			expected[p.toIdx(3, 'f')] = [p2];
+			expected[p.toIdx(7, 'f')] = [p3];
+			let actual = board.computeAttack(attackers);
+			for (let i = 0; i < defs.BOARD_SIZE; i++) {
+				assert.isArray(actual[i]);
+				assert.sameMembers(actual[i], expected[i], `i = ${i}`);
+			}
+		});
+	});
+
+	describe('.isCheckmate', function () {
+
+		let king = new King(COLOR.WHITE, p.toIdx(5, 'a'));
+		it('should return true when the King cannot avoid being captured on its next turn', function () {
+			debugger;
+			board.addPiece(king);
+			board.addPiece(new Silver(COLOR.BLACK, p.toIdx(5, 'c')));
+			assert.isFalse(board.isCheckmate(king));
+
+			board.addPiece(new Gold(COLOR.BLACK, p.toIdx(5, 'b')));
+			assert.isTrue(board.isCheckmate(king));
+
+			/* TODO: generate tests from tsume shogi database for thorough testing*/
 		});
 	});
 });

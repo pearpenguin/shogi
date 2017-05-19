@@ -17,6 +17,20 @@ export function toIdx (col, rowChar) {
 	return row * NUM_COLS + col;
 }
 
+/* Convert a board index to a zero-based column number.
+ *  east -> west == 0 -> 8 */
+export function toCol (idx) {
+	/* Get the remainder of idx divided by number of columns */
+	return idx % NUM_COLS;
+}
+
+/* Convert a board index to a zero-based row number 
+ *  north -> south == 0 -> 8 */
+export function toRow (idx) {
+	/* Get the quotient of idx divided by number of columns */
+	return Math.foor(idx/NUM_COLS);
+}
+
 export function isValid(pos) {
 	if (typeof(pos) === 'number' && pos >= 0 && pos < BOARD_SIZE)
 		return true;

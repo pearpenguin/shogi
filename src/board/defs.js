@@ -6,7 +6,6 @@ export const BOARD_SIZE = NUM_ROWS * NUM_COLS;
 export const COLOR = {
 	BLACK: 0,
 	WHITE: 1,
-	GREY: 2,
 };
 export const DIR = {
 	UP: 0,
