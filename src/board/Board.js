@@ -233,6 +233,21 @@ export default class Board {
 		});
 	}
 
+	/* Returns an array of the pieces which are attacking the king */
+	getCheckingPieces (king) {
+		if (!(king instanceof King))
+			throw new Error('Need King to caltulate check');
+
+		/* Check if the King is being attacked */
+		/* Work out which squares are being attacked by opponent pieces */
+		return this.computeAttackFromColor(swapColor(king.color))[king.pos];
+	}
+
+	/* Return true if the specified king is under check, false otherwise */
+	isCheck (king) {
+		return this.getCheckingPieces(king).length !== 0;
+	}
+
 	/* Work out if the specified piece has been checkmated
 	 * Use only for drop pawn mate checks */
 	isCheckmate (king) {
@@ -242,14 +257,10 @@ export default class Board {
 		/* Copy the board state so we can play around with it */
 		let b = this.clone();
 		let enemyColor = swapColor(king.color);
-		let oldKingPos = (king.pos);
+		let oldKingPos = king.pos;
 		king = b.getPiece(oldKingPos); /* Reference cloned king */
 
-		/* Work out which squares are being attacked by opponent pieces */
-		let attackers = b.computeAttackFromColor(enemyColor);
-
-		/* Check if King is being attacked */
-		let kingAttackers = attackers[king.pos];
+		let kingAttackers = b.getCheckingPieces(king);
 		if (kingAttackers.length === 0) {
 			return false;
 		}
@@ -266,8 +277,7 @@ export default class Board {
 			b.removePiece(king);
 			b.putPiece(king, move);
 			/* Recompute attacked squares */
-			let newAttack = b.computeAttackFromColor(enemyColor);
-			if (newAttack[move].length === 0) {
+			if (b.getCheckingPieces(king).length === 0) {
 				return false;
 			}
 			/* Restore pieces */
