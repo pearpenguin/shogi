@@ -371,7 +371,6 @@ describe('Board', function () {
 
 		let king = new King(COLOR.WHITE, p.toIdx(5, 'a'));
 		it('should return true when the King cannot avoid being captured on its next turn', function () {
-			debugger;
 			board.addPiece(king);
 			board.addPiece(new Silver(COLOR.BLACK, p.toIdx(5, 'c')));
 			assert.isFalse(board.isCheckmate(king));

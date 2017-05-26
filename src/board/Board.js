@@ -233,7 +233,8 @@ export default class Board {
 		});
 	}
 
-	/* Work out if the specified piece has been checkmated */
+	/* Work out if the specified piece has been checkmated
+	 * Use only for drop pawn mate checks */
 	isCheckmate (king) {
 		if (!(king instanceof King))
 			throw new Error('Need King to calculate checkmate');
@@ -260,17 +261,22 @@ export default class Board {
 		let kingMoves = king.getLegalMoves(this);
 		for (let i in kingMoves) {
 			let move = kingMoves[i];
+			/* If there is already a piece there, save it */
+			let piece = b.getPiece(move);
 			b.removePiece(king);
 			b.putPiece(king, move);
 			/* Recompute attacked squares */
-			let newAttack = b.computeAttack(attackers[oldKingPos]);
-			if (newAttack.length === 0) {
+			let newAttack = b.computeAttackFromColor(enemyColor);
+			if (newAttack[move].length === 0) {
 				return false;
 			}
+			/* Restore pieces */
+			b.removePiece(king);
+			b.putPiece(king, oldKingPos);
+			if (piece) {
+				b.putPiece(piece, move);
+			}
 		}
-		/* Move king back to it's original position */
-		b.removePiece(king);
-		b.putPiece(king, oldKingPos);
 
 		/* We've worked out that the King cannot dodge.
 		 * If there is more than one attacking piece, it is checkmate */
@@ -295,6 +301,9 @@ export default class Board {
 				return false;
 			}
 		}
+
+		/* TODO: work out whether we can block the attacker, either with a piece move
+		 * or a drop. Not required to check drop pawn mate */
 
 		/* Cannot avoid checkmate */
 		return true;
